@@ -168,6 +168,8 @@ enum ExpensesType : byte {
 	EXPENSES_SHIP_REVENUE,        ///< Revenue from ships.
 	EXPENSES_LOAN_INTEREST,       ///< Interest payments over the loan.
 	EXPENSES_OTHER,               ///< Other expenses.
+	EXPENSES_SHARING_REVENUE,     ///< Infrastructure sharing revenue.
+	EXPENSES_SHARING_COST,        ///< Infrastructure sharing costs.
 	EXPENSES_END,                 ///< Number of expense types.
 	INVALID_EXPENSES      = 0xFF, ///< Invalid expense type.
 };

@@ -227,14 +227,16 @@ static void SubtractMoneyFromAnyCompany(Company *c, const CommandCost &cost)
 	if (HasBit(1 << EXPENSES_TRAIN_REVENUE    |
 	           1 << EXPENSES_ROADVEH_REVENUE  |
 	           1 << EXPENSES_AIRCRAFT_REVENUE |
-	           1 << EXPENSES_SHIP_REVENUE, cost.GetExpensesType())) {
+	           1 << EXPENSES_SHIP_REVENUE     |
+	           1 << EXPENSES_SHARING_REVENUE, cost.GetExpensesType())) {
 		c->cur_economy.income -= cost.GetCost();
 	} else if (HasBit(1 << EXPENSES_TRAIN_RUN    |
 	                  1 << EXPENSES_ROADVEH_RUN  |
 	                  1 << EXPENSES_AIRCRAFT_RUN |
 	                  1 << EXPENSES_SHIP_RUN     |
 	                  1 << EXPENSES_PROPERTY     |
-	                  1 << EXPENSES_LOAN_INTEREST, cost.GetExpensesType())) {
+	                  1 << EXPENSES_LOAN_INTEREST|
+	                  1 << EXPENSES_SHARING_COST, cost.GetExpensesType())) {
 		c->cur_economy.expenses -= cost.GetCost();
 	}
 

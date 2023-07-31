@@ -35,6 +35,7 @@
 #include "industry.h"
 #include "industry_map.h"
 #include "ship_cmd.h"
+#include "infrastructure_func.h"
 
 #include "table/strings.h"
 
@@ -155,7 +156,7 @@ static const Depot *FindClosestShipDepot(const Vehicle *v, uint max_distance)
 
 	for (const Depot *depot : Depot::Iterate()) {
 		TileIndex tile = depot->xy;
-		if (IsShipDepotTile(tile) && IsTileOwner(tile, v->owner)) {
+		if (IsShipDepotTile(tile) && IsInfraTileUsageAllowed(VEH_SHIP, v->owner, tile)) {
 			uint dist = DistanceManhattan(tile, v->tile);
 			if (dist < best_dist) {
 				best_dist = dist;
@@ -431,7 +432,7 @@ static uint ShipAccelerate(Vehicle *v)
  * @param v  Ship that arrived.
  * @param st Station being visited.
  */
-static void ShipArrivesAt(const Vehicle *v, Station *st)
+static void ShipArrivesAt(Vehicle *v, Station *st)
 {
 	/* Check if station was ever visited before */
 	if (!(st->had_vehicle_of_type & HVOT_SHIP)) {
@@ -447,6 +448,8 @@ static void ShipArrivesAt(const Vehicle *v, Station *st)
 		AI::NewEvent(v->owner, new ScriptEventStationFirstVehicle(st->index, v->index));
 		Game::NewEvent(new ScriptEventStationFirstVehicle(st->index, v->index));
 	}
+
+	PayStationSharingFee(v, st);
 }
 
 

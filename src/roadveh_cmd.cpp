@@ -37,6 +37,7 @@
 #include "framerate_type.h"
 #include "roadveh_cmd.h"
 #include "road_cmd.h"
+#include "infrastructure_func.h"
 
 #include "table/strings.h"
 
@@ -681,7 +682,7 @@ static RoadVehicle *RoadVehFindCloseTo(RoadVehicle *v, int x, int y, Direction d
  * @param v  Road vehicle that arrived.
  * @param st Station where the road vehicle arrived.
  */
-static void RoadVehArrivesAt(const RoadVehicle *v, Station *st)
+static void RoadVehArrivesAt(RoadVehicle *v, Station *st)
 {
 	if (v->IsBus()) {
 		/* Check if station was ever visited before */
@@ -712,6 +713,8 @@ static void RoadVehArrivesAt(const RoadVehicle *v, Station *st)
 			Game::NewEvent(new ScriptEventStationFirstVehicle(st->index, v->index));
 		}
 	}
+
+	PayStationSharingFee(v, st);
 }
 
 /**
@@ -888,14 +891,14 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 	TrackdirBits trackdirs = TrackStatusToTrackdirBits(ts);
 
 	if (IsTileType(tile, MP_ROAD)) {
-		if (IsRoadDepot(tile) && (!IsTileOwner(tile, v->owner) || GetRoadDepotDirection(tile) == enterdir)) {
+		if (IsRoadDepot(tile) && (!IsInfraTileUsageAllowed(VEH_ROAD, v->owner, tile) || GetRoadDepotDirection(tile) == enterdir)) {
 			/* Road depot owned by another company or with the wrong orientation */
 			trackdirs = TRACKDIR_BIT_NONE;
 		}
 	} else if (IsTileType(tile, MP_STATION) && IsStandardRoadStopTile(tile)) {
 		/* Standard road stop (drive-through stops are treated as normal road) */
 
-		if (!IsTileOwner(tile, v->owner) || GetRoadStopDir(tile) == enterdir || v->HasArticulatedPart()) {
+		if (!IsInfraTileUsageAllowed(VEH_ROAD, v->owner, tile) || GetRoadStopDir(tile) == enterdir || v->HasArticulatedPart()) {
 			/* different station owner or wrong orientation or the vehicle has articulated parts */
 			trackdirs = TRACKDIR_BIT_NONE;
 		} else {
@@ -1454,7 +1457,7 @@ again:
 			/* In case an RV is stopped in a road stop, why not try to load? */
 			if (v->cur_speed == 0 && IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END) &&
 					v->current_order.ShouldStopAtStation(v, GetStationIndex(v->tile)) &&
-					v->owner == GetTileOwner(v->tile) && !v->current_order.IsType(OT_LEAVESTATION) &&
+					IsInfraTileUsageAllowed(VEH_ROAD, v->owner, v->tile) && !v->current_order.IsType(OT_LEAVESTATION) &&
 					GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK)) {
 				Station *st = Station::GetByTile(v->tile);
 				v->last_station_visited = st->index;
@@ -1487,7 +1490,7 @@ again:
 			_road_stop_stop_frame[v->state - RVSB_IN_ROAD_STOP + (_settings_game.vehicle.road_side << RVS_DRIVE_SIDE)] == v->frame) ||
 			(IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END) &&
 			v->current_order.ShouldStopAtStation(v, GetStationIndex(v->tile)) &&
-			v->owner == GetTileOwner(v->tile) &&
+			IsInfraTileUsageAllowed(VEH_ROAD, v->owner, v->tile) &&
 			GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK) &&
 			v->frame == RVC_DRIVE_THROUGH_STOP_FRAME))) {
 

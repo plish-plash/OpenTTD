@@ -37,6 +37,7 @@
 #include "roadveh_cmd.h"
 #include "train_cmd.h"
 #include "ship_cmd.h"
+#include "infrastructure_func.h"
 #include <sstream>
 #include <iomanip>
 
@@ -87,9 +88,10 @@ const StringID _send_to_depot_msg_table[] = {
 std::tuple<CommandCost, VehicleID, uint, uint16_t, CargoArray> CmdBuildVehicle(DoCommandFlag flags, TileIndex tile, EngineID eid, bool use_free_vehicles, CargoID cargo, ClientID client_id)
 {
 	/* Elementary check for valid location. */
-	if (!IsDepotTile(tile) || !IsTileOwner(tile, _current_company)) return { CMD_ERROR, INVALID_VEHICLE, 0, 0, {} };
+	if (!IsDepotTile(tile)) return { CMD_ERROR, INVALID_VEHICLE, 0, 0, {} };
 
 	VehicleType type = GetDepotVehicleType(tile);
+	if (!IsInfraTileUsageAllowed(type, _current_company, tile)) return { CMD_ERROR, INVALID_VEHICLE, 0, 0, {} };
 
 	/* Validate the engine type. */
 	if (!IsEngineBuildable(eid, type, _current_company)) return { CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + type), INVALID_VEHICLE, 0, 0, {} };

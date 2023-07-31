@@ -481,7 +481,8 @@ static const SaveLoad _company_desc[] = {
 
 	/* yearly expenses was changed to 64-bit in savegame version 2. */
 	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_FILE_I32 | SLE_VAR_I64, 3 * 13, SL_MIN_VERSION, SLV_2),
-	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_INT64, 3 * 13,                  SLV_2, SL_MAX_VERSION),
+	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_INT64, 3 * 13,                  SLV_2, SLV_INFRASTRUCTURE_SHARING),
+	SLE_CONDARR(CompanyProperties, yearly_expenses,       SLE_INT64, 3 * 15,                  SLV_INFRASTRUCTURE_SHARING, SL_MAX_VERSION),
 
 	SLE_CONDVAR(CompanyProperties, is_ai,                 SLE_BOOL,                    SLV_2, SL_MAX_VERSION),
 

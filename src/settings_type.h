@@ -548,6 +548,7 @@ struct EconomySettings {
 	uint16_t town_noise_population[4];         ///< population to base decision on noise evaluation (@see town_council_tolerance)
 	bool   allow_town_level_crossings;       ///< towns are allowed to build level crossings
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
+	bool   infrastructure_sharing[4];        ///< enable infrastructure sharing for rail/road/water/air
 };
 
 struct LinkGraphSettings {

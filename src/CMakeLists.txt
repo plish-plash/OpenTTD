@@ -216,6 +216,8 @@ add_files(
     industry_map.h
     industry_type.h
     industrytype.h
+    infrastructure.cpp
+    infrastructure_func.h
     ini.cpp
     ini_load.cpp
     ini_type.h

@@ -3863,6 +3863,14 @@ STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT                           :{YELLOW}{STRING
 STR_CONFIG_GAME_PRODUCTION                                      :{WHITE}Change production (multiple of 8, up to 2040)
 STR_CONFIG_GAME_PRODUCTION_LEVEL                                :{WHITE}Change production level (percentage, up to 800%)
 
+# Industry tooltip
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP                           :{BLACK}{INDUSTRY}
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_CARGO1                    :{BLACK}{INDUSTRY}{}{CARGO_LONG} ({COMMA}%)
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_CARGO2                    :{BLACK}{INDUSTRY}{}{CARGO_LONG} ({COMMA}%){}{BLACK}{CARGO_LONG} ({COMMA}%)
+
+# Town tooltip
+STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+
 # Vehicle lists
 ###length VEHICLE_TYPES
 STR_VEHICLE_LIST_TRAIN_CAPTION                                  :{WHITE}{STRING2} - {COMMA} Train{P "" s}

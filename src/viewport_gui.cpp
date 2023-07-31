@@ -14,6 +14,8 @@
 #include "strings_func.h"
 #include "zoom_func.h"
 #include "window_func.h"
+#include "industry.h"
+#include "town_map.h"
 
 #include "widgets/viewport_widget.h"
 
@@ -146,6 +148,18 @@ public:
 		}
 	}
 
+	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		if (widget != WID_EV_VIEWPORT) return false;
+		if (pt.x != -1 && _game_mode != GM_MENU) {
+			/* Show tooltip with last month production or town name */
+			const Point p = GetTileBelowCursor();
+			const TileIndex tile = TileVirtXY(p.x, p.y);
+			if (tile < Map::Size()) return ShowTooltipForTile(this, tile, close_cond);
+		}
+		return false;
+	}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data.
@@ -191,4 +205,36 @@ void ShowExtraViewportWindowForTileUnderCursor()
 	 * Do this before creating the window, it might appear just below the mouse. */
 	Point pt = GetTileBelowCursor();
 	ShowExtraViewportWindow(pt.x != -1 ? TileVirtXY(pt.x, pt.y) : INVALID_TILE);
+}
+
+bool ShowTooltipForTile(Window *w, const TileIndex tile, TooltipCloseCondition close_cond)
+{
+	switch (GetTileType(tile)) {
+		case MP_ROAD:
+			if (IsRoadDepot(tile) || !HasTownOwnedRoad(tile)) return false;
+			/* FALL THROUGH */
+		case MP_HOUSE: {
+			if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return false; // No need for a town name tooltip when it is already displayed
+			SetDParam(0, GetTownIndex(tile));
+			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, TCC_HOVER);
+			return true;
+		}
+		case MP_INDUSTRY: {
+			IndustryID ind = GetIndustryIndex(tile);
+			StringID str = STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP;
+			uint prm_count = 0;
+			SetDParam(prm_count++, ind);
+			for (const auto &p : Industry::Get(ind)->produced) {
+				if (!IsValidCargoID(p.cargo)) continue;
+				SetDParam(prm_count++, p.cargo);
+				SetDParam(prm_count++, p.history[LAST_MONTH].production);
+				SetDParam(prm_count++, ToPercent8(p.history[LAST_MONTH].PctTransported()));
+				str++;
+			}
+			GuiShowTooltips(w, str, TCC_HOVER);
+			return true;
+		}
+		default:
+			return false;
+	}
 }

@@ -663,13 +663,21 @@ struct TooltipsWindow : public Window
 	StringID string_id;               ///< String to display as tooltip.
 	std::vector<StringParameterBackup> params; ///< The string parameters.
 	TooltipCloseCondition close_cond; ///< Condition for closing the window.
+	std::optional<std::string> buffer;///< Text to draw.
 
 	TooltipsWindow(Window *parent, StringID str, uint paramcount, TooltipCloseCondition close_tooltip) : Window(&_tool_tips_desc)
 	{
 		this->parent = parent;
 		this->string_id = str;
-		CopyOutDParam(this->params, paramcount);
 		this->close_cond = close_tooltip;
+		if (paramcount == 0) {
+			// Cache the string here for static tooltips.
+			buffer = GetString(str);
+		} else {
+			// Save the params for dynamic tooltips.
+			buffer = std::nullopt;
+			CopyOutDParam(this->params, paramcount);
+		}
 
 		this->InitNested();
 
@@ -715,8 +723,12 @@ struct TooltipsWindow : public Window
 		GfxFillRect(r, PC_BLACK);
 		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_LIGHT_YELLOW);
 
-		CopyInDParam(this->params);
-		DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect).Shrink(WidgetDimensions::scaled.fullbevel), this->string_id, TC_BLACK, SA_CENTER);
+		if (this->buffer) {
+			DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect).Shrink(WidgetDimensions::scaled.fullbevel), *this->buffer, TC_BLACK, SA_CENTER);
+		} else {
+			CopyInDParam(this->params);
+			DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect).Shrink(WidgetDimensions::scaled.fullbevel), this->string_id, TC_BLACK, SA_CENTER);
+		}
 	}
 
 	void OnMouseLoop() override

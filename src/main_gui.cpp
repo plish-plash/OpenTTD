@@ -446,7 +446,14 @@ struct MainWindow : Window
 	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget != WID_M_VIEWPORT) return false;
-		return this->viewport->overlay->ShowTooltip(pt, close_cond);
+		if (this->viewport->overlay->ShowTooltip(pt, close_cond)) return true;
+		if (pt.x != -1 && _game_mode != GM_MENU) {
+			/* Show tooltip with last month production or town name */
+			const Point p = GetTileBelowCursor();
+			const TileIndex tile = TileVirtXY(p.x, p.y);
+			if (tile < Map::Size()) return ShowTooltipForTile(this, tile, close_cond);
+		}
+		return false;
 	}
 
 	/**

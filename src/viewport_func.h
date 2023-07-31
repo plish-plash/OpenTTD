@@ -13,6 +13,7 @@
 #include "gfx_type.h"
 #include "viewport_type.h"
 #include "window_type.h"
+#include "window_gui.h"
 #include "tile_map.h"
 #include "station_type.h"
 
@@ -93,6 +94,8 @@ static inline void MarkTileDirtyByTile(TileIndex tile, int bridge_level_offset =
 }
 
 Point GetViewportStationMiddle(const Viewport *vp, const Station *st);
+
+bool ShowTooltipForTile(Window *w, const TileIndex tile, TooltipCloseCondition close_cond);
 
 struct Station;
 struct Waypoint;

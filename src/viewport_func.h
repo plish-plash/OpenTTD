@@ -16,6 +16,7 @@
 #include "window_gui.h"
 #include "tile_map.h"
 #include "station_type.h"
+#include "vehicle_base.h"
 
 static const int TILE_HEIGHT_STEP = 50; ///< One Z unit tile height difference is displayed as 50m.
 
@@ -29,6 +30,7 @@ Point GetTileBelowCursor();
 void UpdateViewportPosition(Window *w);
 
 bool MarkAllViewportsDirty(int left, int top, int right, int bottom);
+void MarkAllRouteStepsDirty(const Vehicle *veh);
 
 bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);

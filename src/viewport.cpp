@@ -90,6 +90,7 @@
 #include "network/network_func.h"
 #include "framerate_type.h"
 #include "viewport_cmd.h"
+#include "depot_base.h"
 
 #include <forward_list>
 #include <stack>
@@ -161,6 +162,9 @@ typedef std::vector<StringSpriteToDraw> StringSpriteToDrawVector;
 typedef std::vector<ParentSpriteToDraw> ParentSpriteToDrawVector;
 typedef std::vector<ChildScreenSpriteToDraw> ChildScreenSpriteToDrawVector;
 
+typedef std::list<std::pair<int, OrderType>> RankOrderTypeList;
+typedef std::map<TileIndex, RankOrderTypeList> RouteStepsMap;
+
 /** Data structure storing rendering information */
 struct ViewportDrawer {
 	DrawPixelInfo dpi;
@@ -184,6 +188,13 @@ struct ViewportDrawer {
 static bool MarkViewportDirty(const Viewport *vp, int left, int top, int right, int bottom);
 
 static ViewportDrawer _vd;
+
+RouteStepsMap _vp_route_steps;
+uint _vp_route_step_width = 0;
+uint _vp_route_step_height_top = 0;
+uint _vp_route_step_height_middle = 0;
+uint _vp_route_step_height_bottom = 0;
+SubSprite _vp_route_step_subsprite;
 
 TileHighlightData _thd;
 static TileInfo _cur_ti;
@@ -1722,6 +1733,88 @@ static void ViewportDrawStrings(ZoomLevel zoom, const StringSpriteToDrawVector *
 	}
 }
 
+static inline Vehicle *GetVehicleFromWindow(Window *w)
+{
+	if (w) {
+		WindowClass wc = w->window_class;
+		WindowNumber wn = w->window_number;
+
+		if (wc == WC_DROPDOWN_MENU) {
+			wc = w->parent->window_class;
+			wn = w->parent->window_number;
+		}
+
+		switch (wc) {
+			case WC_VEHICLE_ORDERS:
+			case WC_VEHICLE_TIMETABLE:
+				if (wn != INVALID_VEHICLE) return Vehicle::Get(wn);
+				break;
+			default:
+				break;
+		}
+	}
+	return NULL;
+}
+
+static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const RankOrderTypeList list)
+{
+	if (tile == INVALID_TILE) return;
+	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
+	const int x = UnScaleByZoomLower(pt.x - _vd.dpi.left, _vd.dpi.zoom) - (_vp_route_step_width / 2);
+	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
+	const int rsth = _vp_route_step_height_top + (int) list.size() * char_height + _vp_route_step_height_bottom;
+	const int y = UnScaleByZoomLower(pt.y - _vd.dpi.top,  _vd.dpi.zoom) - rsth;
+
+	/* Draw the background. */
+	DrawSprite(SPR_ROUTE_STEP_TOP, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y);
+	uint y2 = y + _vp_route_step_height_top;
+
+	for (size_t r = list.size(); r != 0; r--, y2 += char_height) {
+		DrawSprite(SPR_ROUTE_STEP_MIDDLE, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y2, &_vp_route_step_subsprite);
+	}
+
+	DrawSprite(SPR_ROUTE_STEP_BOTTOM, PAL_NONE, _cur_dpi->left + x, _cur_dpi->top + y2);
+	SpriteID s = SPR_ROUTE_STEP_BOTTOM_SHADOW;
+	DrawSprite(SetBit(s, PALETTE_MODIFIER_TRANSPARENT), PALETTE_TO_TRANSPARENT, _cur_dpi->left + x, _cur_dpi->top + y2);
+
+	/* Fill with the data. */
+	y2 = y + _vp_route_step_height_top;
+	for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
+		/* Write order's info */
+		SetDParam(0, cit->first);
+		DrawString(_cur_dpi->left + x, _cur_dpi->left + x + _vp_route_step_width - 1, _cur_dpi->top + y2, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
+	}
+}
+
+static bool ViewportPrepareVehicleRouteSteps(const Vehicle * const veh)
+{
+	if (!veh) return false;
+
+	if (_vp_route_steps.size() == 0) {
+		/* Prepare data. */
+		int order_rank = 0;
+		for (const Order *order : veh->Orders()) {
+			const TileIndex tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+			order_rank++;
+			if (tile == INVALID_TILE) continue;
+			_vp_route_steps[tile].push_back(std::pair<int, OrderType>(order_rank, order->GetType()));
+		}
+	}
+
+	return true;
+}
+
+/** Draw the route steps of a vehicle. */
+static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
+{
+	const Vehicle * const veh = GetVehicleFromWindow(_focused_window);
+	if (veh && ViewportPrepareVehicleRouteSteps(veh)) {
+		for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
+			DrawRouteStep(vp, cit->first, cit->second);
+		}
+	}
+}
+
 void ViewportDoDraw(const Viewport *vp, int left, int top, int right, int bottom)
 {
 	_vd.dpi.zoom = vp->zoom;
@@ -1781,6 +1874,7 @@ void ViewportDoDraw(const Viewport *vp, int left, int top, int right, int bottom
 		dp.top = UnScaleByZoom(_vd.dpi.top, zoom);
 		ViewportDrawStrings(zoom, &_vd.string_sprites_to_draw);
 	}
+	if (_settings_client.gui.show_vehicle_route_steps) ViewportDrawVehicleRouteSteps(vp);
 
 	_vd.string_sprites_to_draw.clear();
 	_vd.tile_sprites_to_draw.clear();
@@ -1965,6 +2059,32 @@ bool MarkAllViewportsDirty(int left, int top, int right, int bottom)
 	}
 
 	return dirty;
+}
+
+static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
+{
+	assert(tile != INVALID_TILE);
+	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
+	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
+	for (const Window *w : Window::Iterate()) {
+		const Viewport * const vp = w->viewport;
+		if (vp != NULL) {
+			assert(vp->width != 0);
+			const int half_width = ScaleByZoom((_vp_route_step_width / 2) + 1, vp->zoom);
+			const int height = ScaleByZoom(_vp_route_step_height_top + char_height * order_nr + _vp_route_step_height_bottom, vp->zoom);
+			MarkViewportDirty(vp, pt.x - half_width, pt.y - height, pt.x + half_width, pt.y);
+		}
+	}
+}
+
+void MarkAllRouteStepsDirty(const Vehicle *veh)
+{
+	_vp_route_steps.clear();
+	ViewportPrepareVehicleRouteSteps(veh);
+	for (RouteStepsMap::const_iterator cit = _vp_route_steps.begin(); cit != _vp_route_steps.end(); cit++) {
+		MarkRouteStepDirty(cit->first, (uint) cit->second.size());
+	}
+	_vp_route_steps.clear();
 }
 
 void ConstrainAllViewportsZoom()

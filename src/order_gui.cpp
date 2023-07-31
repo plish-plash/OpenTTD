@@ -1552,6 +1552,16 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_O_ORDER_LIST);
 	}
 
+	void OnFocus() override
+	{
+		MarkAllRouteStepsDirty(this->vehicle);
+	}
+
+	void OnFocusLost(bool closing) override
+	{
+		MarkAllRouteStepsDirty(this->vehicle);
+	}
+
 	static inline HotkeyList hotkeys{"order", {
 		Hotkey('D', "skip", OHK_SKIP),
 		Hotkey('F', "delete", OHK_DELETE),

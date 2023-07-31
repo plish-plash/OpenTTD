@@ -213,6 +213,7 @@ struct GUISettings {
 	uint8_t  newgrf_default_palette;           ///< default palette to use for NewGRFs without action 14 palette information
 
 	bool   scale_bevels;                     ///< bevels are scaled with GUI scale.
+	bool   show_vehicle_route_steps;         ///< when a window related to a specific vehicle is focused, show route steps.
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game

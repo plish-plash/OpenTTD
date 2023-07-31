@@ -28,6 +28,7 @@
 #include "order_cmd.h"
 #include "train_cmd.h"
 #include "infrastructure_func.h"
+#include "viewport_func.h"
 
 #include "table/strings.h"
 
@@ -984,6 +985,7 @@ void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord)
 
 	/* Make sure to rebuild the whole list */
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
+	MarkAllRouteStepsDirty(v);
 }
 
 /**
@@ -997,6 +999,7 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlag flags)
 		DeleteVehicleOrders(dst);
 		InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
+		MarkAllRouteStepsDirty(dst);
 	}
 	return CommandCost();
 }
@@ -1048,6 +1051,8 @@ static void CancelLoadingDueToDeletedOrder(Vehicle *v)
  */
 void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 {
+	MarkAllRouteStepsDirty(v);
+	
 	v->orders->DeleteOrderAt(sel_ord);
 
 	Vehicle *u = v->FirstShared();
@@ -1222,6 +1227,7 @@ CommandCost CmdMoveOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID movi
 
 		/* Make sure to rebuild the whole list */
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 0);
+		MarkAllRouteStepsDirty(v);
 	}
 
 	return CommandCost();
@@ -1562,6 +1568,7 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
 				InvalidateVehicleOrder(src, VIWD_MODIFY_ORDERS);
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
+				MarkAllRouteStepsDirty(dst);
 			}
 			break;
 		}
@@ -1623,6 +1630,7 @@ CommandCost CmdCloneOrder(DoCommandFlag flags, CloneOptions action, VehicleID ve
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type), 0);
+				MarkAllRouteStepsDirty(dst);
 			}
 			break;
 		}

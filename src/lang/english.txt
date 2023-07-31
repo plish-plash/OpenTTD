@@ -1624,6 +1624,7 @@ STR_CONFIG_SETTING_OSK_ACTIVATION_DISABLED                      :Disabled
 STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Double click
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK_FOCUS            :Single click (when focussed)
 STR_CONFIG_SETTING_OSK_ACTIVATION_SINGLE_CLICK                  :Single click (immediately)
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :Show the vehicle's route steps: {STRING2}
 
 STR_CONFIG_SETTING_USE_RELAY_SERVICE                            :Use relay service: {STRING2}
 STR_CONFIG_SETTING_USE_RELAY_SERVICE_HELPTEXT                   :If creating a connection to the server fails, one can use a relay service to create a connection. "Never" disallows this, "ask" will ask first, "allow" will allow it without asking
@@ -5643,6 +5644,8 @@ STR_VIEWPORT_STATION_TINY                                       :{TINY_FONT}{STA
 
 STR_VIEWPORT_WAYPOINT                                           :{WAYPOINT}
 STR_VIEWPORT_WAYPOINT_TINY                                      :{TINY_FONT}{WAYPOINT}
+
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP                            :{BLACK}{NUM}
 
 # Simple strings to get specific types of data
 STR_COMPANY_NAME                                                :{COMPANY}

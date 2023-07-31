@@ -17,6 +17,7 @@
 #include "blitter/factory.hpp"
 #include "video/video_driver.hpp"
 #include "window_func.h"
+#include "zoom_func.h"
 
 /* The type of set we're replacing */
 #define SET_TYPE "graphics"
@@ -173,6 +174,9 @@ static void LoadSpriteTables()
 			PAL_DOS != used_set->palette
 		);
 	}
+
+	/* Load route step graphics */
+	LoadGrfFile("route_step.grf", SPR_ROUTE_STEP_BASE, PAL_DOS != used_set->palette);
 
 	/* Initialize the unicode to sprite mapping table */
 	InitializeUnicodeGlyphMap();
@@ -332,6 +336,33 @@ void CheckBlitter()
 	ReInitAllWindows(false);
 }
 
+static void UpdateRouteStepSpriteSize()
+{
+	extern uint _vp_route_step_width;
+	extern uint _vp_route_step_height_top;
+	extern uint _vp_route_step_height_middle;
+	extern uint _vp_route_step_height_bottom;
+	extern SubSprite _vp_route_step_subsprite;
+
+	Dimension d = GetSpriteSize(SPR_ROUTE_STEP_TOP);
+	_vp_route_step_width = d.width;
+	_vp_route_step_height_top = d.height;
+
+	d = GetSpriteSize(SPR_ROUTE_STEP_MIDDLE);
+	_vp_route_step_height_middle = d.height;
+	assert(_vp_route_step_width == d.width);
+
+	d = GetSpriteSize(SPR_ROUTE_STEP_BOTTOM);
+	_vp_route_step_height_bottom = d.height;
+	assert(_vp_route_step_width == d.width);
+
+	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
+	_vp_route_step_subsprite.right = ScaleByZoom(_vp_route_step_width, ZOOM_LVL_GUI);
+	_vp_route_step_subsprite.bottom = ScaleByZoom(char_height, ZOOM_LVL_GUI);
+	_vp_route_step_subsprite.left = 0;
+	_vp_route_step_subsprite.top = 0;
+}
+
 /** Initialise and load all the sprites. */
 void GfxLoadSprites()
 {
@@ -344,6 +375,7 @@ void GfxLoadSprites()
 	LoadSpriteTables();
 	GfxInitPalettes();
 
+	UpdateRouteStepSpriteSize();
 	UpdateCursorSize();
 }
 

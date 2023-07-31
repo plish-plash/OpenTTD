@@ -24,6 +24,7 @@
 #include "settings_type.h"
 #include "timetable_cmd.h"
 #include "timetable.h"
+#include "viewport_func.h"
 
 #include "widgets/timetable_widget.h"
 
@@ -693,6 +694,16 @@ struct TimetableWindow : Window {
 	{
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
+	}
+
+	void OnFocus() override
+	{
+		MarkAllRouteStepsDirty(this->vehicle);
+	}
+
+	void OnFocusLost(bool closing) override
+	{
+		MarkAllRouteStepsDirty(this->vehicle);
 	}
 };
 

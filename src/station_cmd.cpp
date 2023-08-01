@@ -304,6 +304,28 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	uint32_t tmp = free_names & _gen_station_name_bits[name_class];
 	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
 
+	/* if there's exactly one industry nearby, use its name. */
+	const Industry *nearby_ind = nullptr;
+	for (int dx = -3; dx <= 3; dx++) {
+		for (int dy = -3; dy <= 3; dy++) {
+			TileIndex t = TileAddWrap(tile, dx, dy);
+			if (IsTileType(t, MP_INDUSTRY)) {
+				const Industry *ind = Industry::GetByTile(t);
+				if (nearby_ind != nullptr && nearby_ind != ind) {
+					goto no_nearby_industry;
+				}
+				nearby_ind = ind;
+			} else if (IsTileType(t, MP_HOUSE)) {
+				goto no_nearby_industry;
+			}
+		}
+	}
+	if (nearby_ind != nullptr && nearby_ind->town == st->town && !indtypes[nearby_ind->type]) {
+		st->indtype = nearby_ind->type;
+		return STR_SV_STNAME_FALLBACK;
+	}
+no_nearby_industry:
+
 	/* check mine? */
 	if (HasBit(free_names, M(STR_SV_STNAME_MINES))) {
 		if (CountMapSquareAround(tile, CMSAMine) >= 2) {
@@ -366,7 +388,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
  */
 static Station *GetClosestDeletedStation(TileIndex tile)
 {
-	uint threshold = 8;
+	uint threshold = 64;
 
 	Station *best_station = nullptr;
 	ForAllStationsRadius(tile, threshold, [&](Station *st) {

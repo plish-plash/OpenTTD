@@ -1531,11 +1531,17 @@ static void FormatString(StringBuilder &builder, const char *str_arg, StringPara
 						 * actually set the station name. */
 						if (indsp->station_name != STR_NULL && indsp->station_name != STR_UNDEFINED) {
 							string_id = indsp->station_name;
+						} else {
+							auto tmp_params = MakeParameters(st->town->index, indsp->name);
+							GetStringWithArgs(builder, STR_FORMAT_INDUSTRY_NAME, tmp_params);
+							string_id = STR_NULL;
 						}
 					}
 
-					auto tmp_params = MakeParameters(STR_TOWN_NAME, st->town->index, st->index);
-					GetStringWithArgs(builder, string_id, tmp_params);
+					if (string_id != STR_NULL) {
+						auto tmp_params = MakeParameters(STR_TOWN_NAME, st->town->index, st->index);
+						GetStringWithArgs(builder, string_id, tmp_params);
+					}
 				}
 				break;
 			}

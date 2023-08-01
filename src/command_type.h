@@ -356,6 +356,12 @@ enum Commands : uint16_t {
 	CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, ///< update the score of a league table element
 	CMD_REMOVE_LEAGUE_TABLE_ELEMENT,       ///< remove a league table element
 
+	CMD_ADD_PLAN,
+	CMD_ADD_PLAN_LINE,
+	CMD_REMOVE_PLAN,
+	CMD_REMOVE_PLAN_LINE,
+	CMD_CHANGE_PLAN_VISIBILITY,
+
 	CMD_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 

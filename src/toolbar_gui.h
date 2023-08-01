@@ -50,7 +50,8 @@ enum MainToolbarHotkeys {
 	MTHK_TERRAFORM,
 	MTHK_EXTRA_VIEWPORT,
 	MTHK_CLIENT_LIST,
-	MTHK_SIGN_LIST
+	MTHK_SIGN_LIST,
+	MTHK_PLAN_LIST,
 };
 
 void AllocateToolbar();

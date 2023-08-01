@@ -249,6 +249,7 @@ static const std::vector<ChunkHandlerRef> &ChunkHandlers()
 	extern const ChunkHandlerTable _airport_chunk_handlers;
 	extern const ChunkHandlerTable _object_chunk_handlers;
 	extern const ChunkHandlerTable _persistent_storage_chunk_handlers;
+	extern const ChunkHandlerTable _plan_chunk_handlers;
 
 	/** List of all chunks in a savegame. */
 	static const ChunkHandlerTable _chunk_handler_tables[] = {
@@ -286,6 +287,7 @@ static const std::vector<ChunkHandlerRef> &ChunkHandlers()
 		_airport_chunk_handlers,
 		_object_chunk_handlers,
 		_persistent_storage_chunk_handlers,
+		_plan_chunk_handlers,
 	};
 
 	static std::vector<ChunkHandlerRef> _chunk_handlers;
@@ -1043,7 +1045,7 @@ static inline size_t SlCalcArrayLen(size_t length, VarType conv)
  * @param length The length of the array in elements
  * @param conv VarType type of the atomic array (int, byte, uint64_t, etc.)
  */
-static void SlArray(void *array, size_t length, VarType conv)
+void SlArray(void *array, size_t length, VarType conv)
 {
 	switch (_sl.action) {
 		case SLA_SAVE:

@@ -31,6 +31,7 @@ void UpdateViewportPosition(Window *w);
 
 bool MarkAllViewportsDirty(int left, int top, int right, int bottom);
 void MarkAllRouteStepsDirty(const Vehicle *veh);
+void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile);
 
 bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);

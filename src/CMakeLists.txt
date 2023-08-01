@@ -328,6 +328,13 @@ add_files(
     osk_gui.cpp
     pbs.cpp
     pbs.h
+    plans.cpp
+    plans_base.h
+    plans_cmd.cpp
+    plans_cmd.h
+    plans_func.h
+    plans_gui.cpp
+    plans_type.h
     progress.cpp
     progress.h
     querystring_gui.h

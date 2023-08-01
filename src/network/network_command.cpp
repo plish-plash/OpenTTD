@@ -32,6 +32,7 @@
 #include "../news_cmd.h"
 #include "../object_cmd.h"
 #include "../order_cmd.h"
+#include "../plans_cmd.h"
 #include "../rail_cmd.h"
 #include "../road_cmd.h"
 #include "../roadveh_cmd.h"
@@ -82,7 +83,8 @@ static constexpr auto _callback_tuple = std::make_tuple(
 	&CcBuildIndustry,
 	&CcStartStopVehicle,
 	&CcGame,
-	&CcAddVehicleNewGroup
+	&CcAddVehicleNewGroup,
+	&CcAddPlan
 );
 
 #ifdef SILENCE_GCC_FUNCTION_POINTER_CAST

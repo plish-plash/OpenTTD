@@ -69,6 +69,8 @@
 #include "town.h"
 #include "signs_base.h"
 #include "signs_func.h"
+#include "plans_base.h"
+#include "plans_func.h"
 #include "vehicle_base.h"
 #include "vehicle_gui.h"
 #include "blitter/factory.hpp"
@@ -1815,6 +1817,52 @@ static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
 	}
 }
 
+void ViewportDrawPlans(const Viewport *vp)
+{
+	for (Plan *p : Plan::Iterate()) {
+		if (!p->IsVisible()) continue;
+		for (PlanLineVector::iterator it = p->lines.begin(); it != p->lines.end(); it++) {
+			PlanLine *pl = *it;
+			if (!pl->visible) continue;
+			for (uint i = 1; i < pl->tiles.size(); i++) {
+				const TileIndex from_tile = pl->tiles[i-1];
+				const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
+				const int from_x = UnScaleByZoom(from_pt.x, vp->zoom);
+				const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
+
+				const TileIndex to_tile = pl->tiles[i];
+				const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
+				const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
+				const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
+				
+				int colour = PC_GREY;
+				if (pl->focused) {
+					colour = PC_WHITE;
+				} else if (p->owner != _local_company) {
+					colour = PC_LIGHT_BLUE;
+				}
+				GfxDrawLine(from_x, from_y, to_x, to_y, colour, 3, 1);
+			}
+		}
+	}
+
+	if (_current_plan && _current_plan->temp_line->tiles.size() > 1) {
+		for (uint i = 1; i < _current_plan->temp_line->tiles.size(); i++) {
+			const TileIndex from_tile = _current_plan->temp_line->tiles[i-1];
+			const Point from_pt = RemapCoords2(TileX(from_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(from_tile) * TILE_SIZE + TILE_SIZE / 2);
+			const int from_x = UnScaleByZoom(from_pt.x, vp->zoom);
+			const int from_y = UnScaleByZoom(from_pt.y, vp->zoom);
+
+			const TileIndex to_tile = _current_plan->temp_line->tiles[i];
+			const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
+			const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
+			const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
+				
+			GfxDrawLine(from_x, from_y, to_x, to_y, PC_WHITE, 3, 1);
+		}
+	}
+}
+
 void ViewportDoDraw(const Viewport *vp, int left, int top, int right, int bottom)
 {
 	_vd.dpi.zoom = vp->zoom;
@@ -1868,10 +1916,12 @@ void ViewportDoDraw(const Viewport *vp, int left, int top, int right, int bottom
 		vp->overlay->Draw(&dp);
 	}
 
+	/* translate to world coordinates */
+	dp.left = UnScaleByZoom(_vd.dpi.left, zoom);
+	dp.top = UnScaleByZoom(_vd.dpi.top, zoom);
+	ViewportDrawPlans(vp);
+
 	if (_vd.string_sprites_to_draw.size() != 0) {
-		/* translate to world coordinates */
-		dp.left = UnScaleByZoom(_vd.dpi.left, zoom);
-		dp.top = UnScaleByZoom(_vd.dpi.top, zoom);
 		ViewportDrawStrings(zoom, &_vd.string_sprites_to_draw);
 	}
 	if (_settings_client.gui.show_vehicle_route_steps) ViewportDrawVehicleRouteSteps(vp);
@@ -2115,6 +2165,37 @@ void MarkTileDirtyByTile(TileIndex tile, int bridge_level_offset, int tile_heigh
 			pt.y - MAX_TILE_EXTENT_TOP - ZOOM_LVL_BASE * TILE_HEIGHT * bridge_level_offset,
 			pt.x + MAX_TILE_EXTENT_RIGHT,
 			pt.y + MAX_TILE_EXTENT_BOTTOM);
+}
+
+void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile)
+{
+	assert(from_tile != INVALID_TILE);
+	assert(to_tile != INVALID_TILE);
+
+	int x1 = TileX(from_tile);
+	int y1 = TileY(from_tile);
+	const int x2 = TileX(to_tile);
+	const int y2 = TileY(to_tile);
+
+	/* http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm#Simplification */
+	const int dx = abs(x2 - x1);
+	const int dy = abs(y2 - y1);
+	const int sx = (x1 < x2) ? 1 : -1;
+	const int sy = (y1 < y2) ? 1 : -1;
+	int err = dx - dy;
+	for (;;) {
+		MarkTileDirtyByTile(TileXY(x1, y1));
+		if (x1 == x2 && y1 == y2) break;
+		const int e2 = 2 * err;
+		if (e2 > -dy) {
+			err -= dy;
+			x1 += sx;
+		}
+		if (e2 < dx) {
+			err += dx;
+			y1 += sy;
+		}
+	}
 }
 
 /**

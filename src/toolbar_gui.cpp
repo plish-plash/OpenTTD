@@ -55,6 +55,7 @@
 #include "timer/timer.h"
 #include "timer/timer_window.h"
 #include "timer/timer_game_calendar.h"
+#include "plans_func.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -468,6 +469,7 @@ enum MapMenuEntries {
 	MME_SHOW_SIGNLISTS,
 	MME_SHOW_TOWNDIRECTORY,
 	MME_SHOW_INDUSTRYDIRECTORY,
+	MME_SHOW_PLANS,
 };
 
 static CallBackFunction ToolbarMapClick(Window *w)
@@ -477,6 +479,7 @@ static CallBackFunction ToolbarMapClick(Window *w)
 	list.emplace_back(new DropDownListStringItem(STR_MAP_MENU_EXTRA_VIEWPORT,          MME_SHOW_EXTRAVIEWPORTS,    false));
 	list.emplace_back(new DropDownListStringItem(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false));
 	list.emplace_back(new DropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
+	list.emplace_back(new DropDownListStringItem(STR_MAP_MENU_PLAN_LIST,               MME_SHOW_PLANS,             false));
 	PopupMainToolbMenu(w, WID_TN_SMALL_MAP, std::move(list), 0);
 	return CBF_NONE;
 }
@@ -508,6 +511,7 @@ static CallBackFunction MenuClickMap(int index)
 		case MME_SHOW_SIGNLISTS:         ShowSignList();            break;
 		case MME_SHOW_TOWNDIRECTORY:     ShowTownDirectory();       break;
 		case MME_SHOW_INDUSTRYDIRECTORY: ShowIndustryDirectory();   break;
+		case MME_SHOW_PLANS:             ShowPlansWindow();         break;
 	}
 	return CBF_NONE;
 }
@@ -2080,6 +2084,7 @@ struct MainToolbarWindow : Window {
 			case MTHK_CLIENT_LIST: if (_networking) ShowClientList(); break;
 			case MTHK_SIGN_LIST: ShowSignList(); break;
 			case MTHK_LANDINFO: cbf = PlaceLandBlockInfo(); break;
+			case MTHK_PLAN_LIST: ShowPlansWindow(); break;
 			default: return ES_NOT_HANDLED;
 		}
 		if (cbf != CBF_NONE) _last_started_action = cbf;
@@ -2183,6 +2188,7 @@ struct MainToolbarWindow : Window {
 		Hotkey(0, "client_list", MTHK_CLIENT_LIST),
 		Hotkey(0, "sign_list", MTHK_SIGN_LIST),
 		Hotkey(0, "land_info", MTHK_LANDINFO),
+		Hotkey('P', "plan_list", MTHK_PLAN_LIST),
 	}};
 };
 

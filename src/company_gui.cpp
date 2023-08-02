@@ -78,6 +78,7 @@ static ExpensesType _expenses_list_operating_costs[] = {
 static ExpensesType _expenses_list_capital_costs[] = {
 	EXPENSES_CONSTRUCTION,
 	EXPENSES_NEW_VEHICLES,
+	EXPENSES_INDUSTRY,
 	EXPENSES_OTHER,
 };
 
@@ -2205,6 +2206,7 @@ static const NWidgetPart _nested_company_widgets[] = {
 							NWidget(NWID_SPACER),
 						EndContainer(),
 						NWidget(NWID_SPACER), SetFill(0, 1),
+						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_C_BUY_CONTRACT), SetDataTip(STR_COMPANY_VIEW_BUY_CONTRACT_BUTTON, STR_COMPANY_VIEW_BUY_CONTRACT_TOOLTIP),
 					EndContainer(),
 				EndContainer(),
 				NWidget(WWT_TEXT, COLOUR_GREY, WID_C_DESC_COMPANY_VALUE), SetDataTip(STR_COMPANY_VIEW_COMPANY_VALUE, STR_NULL), SetFill(1, 0),
@@ -2322,7 +2324,7 @@ struct CompanyWindow : Window
 			this->SetWidgetDisabledState(WID_C_VIEW_HQ, c->location_of_HQ == INVALID_TILE);
 
 			/* Enable/disable 'Relocate HQ' button. */
-			plane = (!local || c->location_of_HQ == INVALID_TILE) ? CWP_RELOCATE_HIDE : CWP_RELOCATE_SHOW;
+			plane = CWP_RELOCATE_HIDE; //(!local || c->location_of_HQ == INVALID_TILE) ? CWP_RELOCATE_HIDE : CWP_RELOCATE_SHOW;
 			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_RELOCATE);
 			if (plane != wi->shown_plane) {
 				wi->SetDisplayedPlane(plane);
@@ -2411,6 +2413,7 @@ struct CompanyWindow : Window
 			case WID_C_HOSTILE_TAKEOVER:
 			case WID_C_COMPANY_PASSWORD:
 			case WID_C_COMPANY_JOIN:
+			case WID_C_BUY_CONTRACT:
 				size->width = GetStringBoundingBox(STR_COMPANY_VIEW_VIEW_HQ_BUTTON).width;
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_BUILD_HQ_BUTTON).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_RELOCATE_HQ).width);
@@ -2419,6 +2422,7 @@ struct CompanyWindow : Window
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_PASSWORD).width);
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_JOIN).width);
+				size->width = std::max(size->width, GetStringBoundingBox(STR_COMPANY_VIEW_BUY_CONTRACT_BUTTON).width);
 				size->width += padding.width;
 				break;
 
@@ -2605,6 +2609,11 @@ struct CompanyWindow : Window
 
 			case WID_C_VIEW_INFRASTRUCTURE:
 				ShowCompanyInfrastructure((CompanyID)this->window_number);
+				break;
+			
+			case WID_C_BUY_CONTRACT:
+				if ((byte)this->window_number != _local_company) return;
+				Command<CMD_BUY_CONTRACT>::Post(STR_ERROR_CAN_T_BUY_CONTRACT, &CcBuyContract, 0);
 				break;
 
 			case WID_C_GIVE_MONEY:
@@ -2836,4 +2845,12 @@ void ShowBuyCompanyDialog(CompanyID company, bool hostile_takeover)
 	if (window == nullptr) {
 		new BuyCompanyWindow(&_buy_company_desc, company, hostile_takeover);
 	}
+}
+
+void ShowIndustryViewWindow(int industry);
+
+void CcBuyContract(Commands cmd, const CommandCost &result, IndustryID industry, byte)
+{
+	if (result.Failed()) return;
+	ShowIndustryViewWindow(industry);
 }

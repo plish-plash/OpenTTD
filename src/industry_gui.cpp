@@ -867,6 +867,14 @@ public:
 			ir.top += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
 		}
 
+		if (i->HasContract()) {
+			SetDParam(0, i->exclusive_supplier);
+			DrawString(ir, STR_INDUSTRY_VIEW_CONTRACT);
+		} else {
+			DrawString(ir, STR_INDUSTRY_VIEW_NO_CONTRACT);
+		}
+		ir.top += FONT_HEIGHT_NORMAL;
+
 		bool stockpiling = HasBit(ind->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(ind->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
 
 		for (const auto &a : i->accepted) {

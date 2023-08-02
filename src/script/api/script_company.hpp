@@ -113,6 +113,7 @@ public:
 		EXPENSES_SHIP_INC     = ::EXPENSES_SHIP_REVENUE,     ///< Revenue from ships.
 		EXPENSES_LOAN_INT     = ::EXPENSES_LOAN_INTEREST,    ///< Interest payments over the loan.
 		EXPENSES_OTHER        = ::EXPENSES_OTHER,            ///< Other expenses.
+		EXPENSES_INDUSTRY     = ::EXPENSES_INDUSTRY,         ///< Industry contracts and funding.
 		EXPENSES_INVALID      = ::INVALID_EXPENSES,          ///< Invalid expense type.
 	};
 

@@ -271,6 +271,7 @@ enum Commands : uint16_t {
 	CMD_PAUSE,                        ///< pause the game
 
 	CMD_BUY_COMPANY,                  ///< buy a company which is bankrupt
+	CMD_BUY_CONTRACT,		          ///< buy the next industry contract
 
 	CMD_FOUND_TOWN,                   ///< found a town
 	CMD_RENAME_TOWN,                  ///< rename a town

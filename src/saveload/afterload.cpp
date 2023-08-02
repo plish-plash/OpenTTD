@@ -3157,14 +3157,10 @@ bool AfterLoadGame()
 
 	if (IsSavegameVersionBefore(SLV_INFRASTRUCTURE_SHARING)) {
 		for (Company *c : Company::Iterate()) {
-			/* yearly_expenses has 3*15 entries now, saveload code gave us 3*13.
-			 * Move the old data to the right place in the new array and clear the new data.
-			 * The move has to be done in reverse order (first 2, then 1). */
-			MemMoveT(&c->yearly_expenses[2][0], &c->yearly_expenses[1][11], 13);
-			MemMoveT(&c->yearly_expenses[1][0], &c->yearly_expenses[0][13], 13);
-			/* Clear the old location of just-moved data, so sharing income/expenses is set to 0 */
-			MemSetT(&c->yearly_expenses[0][13], 0, 2);
-			MemSetT(&c->yearly_expenses[1][13], 0, 2);
+			/* yearly_expenses has different entries. Clear the incorrect data. */
+			memset(&c->yearly_expenses[0], 0, sizeof(c->yearly_expenses[0]));
+			memset(&c->yearly_expenses[1], 0, sizeof(c->yearly_expenses[1]));
+			memset(&c->yearly_expenses[2], 0, sizeof(c->yearly_expenses[2]));
 		}
 	}
 

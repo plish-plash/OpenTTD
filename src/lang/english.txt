@@ -3733,7 +3733,7 @@ STR_FINANCES_OPERATING_EXPENSES_TITLE                           :{WHITE}Operatin
 STR_FINANCES_CAPITAL_EXPENSES_TITLE                             :{WHITE}Capital Expenses
 
 
-###length 13
+###length 16
 STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}Construction
 STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}New Vehicles
 STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}Trains
@@ -3747,6 +3747,7 @@ STR_FINANCES_SECTION_AIRCRAFT_REVENUE                           :{GOLD}Aircraft
 STR_FINANCES_SECTION_SHIP_REVENUE                               :{GOLD}Ships
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Loan Interest
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Other
+STR_FINANCES_SECTION_INDUSTRY                                   :{GOLD}Industry
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}Station Sharing
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Station Sharing
 
@@ -3801,6 +3802,8 @@ STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Give mon
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Give money to this company
 STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Hostile takeover
 STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Do a hostile takeover of this company
+STR_COMPANY_VIEW_BUY_CONTRACT_BUTTON                            :{BLACK}Buy Contract
+STR_COMPANY_VIEW_BUY_CONTRACT_TOOLTIP                           :{BLACK}Buy an industry contract, enabling deliveries to and from that industry. Shift+Click shows estimated cost
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}New Face
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Select new face for manager
@@ -3853,6 +3856,8 @@ STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centre the main view on industry location. Ctrl+Click opens a new viewport on industry location
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Production level: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}The industry has announced imminent closure!
+STR_INDUSTRY_VIEW_CONTRACT                                      :{BLACK}Contract with {YELLOW}{COMPANY}
+STR_INDUSTRY_VIEW_NO_CONTRACT                                   :{BLACK}Not contracted
 
 STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Requires: {YELLOW}{STRING}{RAW_STRING}
 STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produces: {YELLOW}{STRING}{RAW_STRING}
@@ -4868,6 +4873,9 @@ STR_ERROR_INSUFFICIENT_FUNDS                                    :{WHITE}Can't gi
 STR_ERROR_CAN_T_GIVE_MONEY                                      :{WHITE}Can't give away money to this company...
 STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Can't buy company...
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Can't build company headquarters...
+STR_ERROR_CAN_T_BUY_CONTRACT                                    :{WHITE}Can't buy contract...
+STR_ERROR_HQ_NOT_BUILT                                          :{WHITE}... company headquarters not built
+STR_ERROR_NO_INDUSTRIES_TO_CONTRACT                             :{WHITE}... no industries left to contract
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Can't build any towns

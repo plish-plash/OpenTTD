@@ -84,7 +84,8 @@ static constexpr auto _callback_tuple = std::make_tuple(
 	&CcStartStopVehicle,
 	&CcGame,
 	&CcAddVehicleNewGroup,
-	&CcAddPlan
+	&CcAddPlan,
+	&CcBuyContract
 );
 
 #ifdef SILENCE_GCC_FUNCTION_POINTER_CAST

@@ -170,6 +170,8 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	 */
 	bool IsCargoProduced(CargoID cargo) const { return std::any_of(std::begin(this->produced), std::end(this->produced), [&cargo](const auto &p) { return p.cargo == cargo; }); }
 
+	bool HasContract() const { return this->exclusive_supplier != INVALID_OWNER; }
+
 	/**
 	 * Get the industry of the given tile
 	 * @param tile the tile to get the industry from

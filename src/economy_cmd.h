@@ -12,9 +12,14 @@
 
 #include "command_type.h"
 #include "company_type.h"
+#include "industry_type.h"
 
 CommandCost CmdBuyCompany(DoCommandFlag flags, CompanyID target_company, bool hostile_takeover);
+std::tuple<CommandCost, IndustryID> CmdBuyContract(DoCommandFlag flags, byte unused);
 
 DEF_CMD_TRAIT(CMD_BUY_COMPANY,           CmdBuyCompany,         0, CMDT_MONEY_MANAGEMENT)
+DEF_CMD_TRAIT(CMD_BUY_CONTRACT,          CmdBuyContract,        0, CMDT_MONEY_MANAGEMENT)
+
+void CcBuyContract(Commands cmd, const CommandCost &result, IndustryID industry, byte);
 
 #endif /* ECONOMY_CMD_H */

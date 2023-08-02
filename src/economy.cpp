@@ -1073,7 +1073,7 @@ static uint DeliverGoodsToIndustry(const Station *st, CargoID cargo_type, uint n
 		/* Check if industry temporarily refuses acceptance */
 		if (IndustryTemporarilyRefusesCargo(ind, cargo_type)) continue;
 
-		if (ind->exclusive_supplier != INVALID_OWNER && ind->exclusive_supplier != st->owner) continue;
+		if (ind->exclusive_supplier != st->owner) continue;
 
 		/* Insert the industry into _cargo_delivery_destinations, if not yet contained */
 		include(_cargo_delivery_destinations, ind);
@@ -2060,4 +2060,35 @@ CommandCost CmdBuyCompany(DoCommandFlag flags, CompanyID target_company, bool ho
 		DoAcquireCompany(c, hostile_takeover);
 	}
 	return cost;
+}
+
+std::tuple<CommandCost, IndustryID> CmdBuyContract(DoCommandFlag flags, byte)
+{
+	if (_current_company == OWNER_DEITY) return {CMD_ERROR, INVALID_INDUSTRY};
+
+	TileIndex hq_tile = Company::Get(_current_company)->location_of_HQ;
+	if (hq_tile == INVALID_TILE) return {CommandCost(STR_ERROR_HQ_NOT_BUILT), INVALID_INDUSTRY};
+
+	std::vector<Industry*> industries(Industry::Iterate().begin(), Industry::Iterate().end());
+	std::sort(industries.begin(), industries.end(), [hq_tile](Industry* a, Industry* b) {
+		return DistanceManhattan(a->location.GetCenterTile(), hq_tile) < DistanceManhattan(b->location.GetCenterTile(), hq_tile);
+	});
+	Industry* ind = nullptr;
+	uint existing_contracts = 0;
+	for (Industry* i : industries) {
+		if (!i->HasContract()) {
+			ind = i;
+			break;
+		} else if (i->exclusive_supplier == _current_company) {
+			existing_contracts += 1;
+		}
+	}
+	if (ind == nullptr) return {CommandCost(STR_ERROR_NO_INDUSTRIES_TO_CONTRACT), INVALID_INDUSTRY};
+
+	Money cost = 2000.f * std::pow(1.2f, existing_contracts);
+	if (flags & DC_EXEC) {
+		ind->exclusive_consumer = _current_company;
+		ind->exclusive_supplier = _current_company;
+	}
+	return {CommandCost(EXPENSES_INDUSTRY, cost), ind->index};
 }

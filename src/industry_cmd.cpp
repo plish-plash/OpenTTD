@@ -1793,8 +1793,8 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	 * else, chosen layout + 1 */
 	i->selected_layout = (byte)(layout_index + 1);
 
-	i->exclusive_supplier = INVALID_OWNER;
-	i->exclusive_consumer = INVALID_OWNER;
+	i->exclusive_supplier = founder == OWNER_NONE ? INVALID_OWNER : founder;
+	i->exclusive_consumer = i->exclusive_supplier;
 
 	i->prod_level = PRODLEVEL_DEFAULT;
 
@@ -2093,7 +2093,7 @@ CommandCost CmdBuildIndustry(DoCommandFlag flags, TileIndex tile, IndustryType i
 		AdvertiseIndustryOpening(ind);
 	}
 
-	return CommandCost(EXPENSES_OTHER, indspec->GetConstructionCost());
+	return CommandCost(EXPENSES_INDUSTRY, indspec->GetConstructionCost());
 }
 
 /**
@@ -2861,7 +2861,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	if (recalculate_multipliers) i->RecomputeProductionMultipliers();
 
 	/* Close if needed and allowed */
-	if (closeit && !CheckIndustryCloseDownProtection(i->type) && !(i->ctlflags & INDCTL_NO_CLOSURE)) {
+	if (closeit && !CheckIndustryCloseDownProtection(i->type) && !(i->ctlflags & INDCTL_NO_CLOSURE) && !i->HasContract()) {
 		i->prod_level = PRODLEVEL_CLOSURE;
 		SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		str = indspec->closure_text;

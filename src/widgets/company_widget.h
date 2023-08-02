@@ -40,6 +40,7 @@ enum CompanyWidgets {
 	WID_C_RELOCATE_HQ,                ///< Button to relocate the HQ.
 
 	WID_C_VIEW_INFRASTRUCTURE,        ///< Panel about infrastructure.
+	WID_C_BUY_CONTRACT,				  ///< Button to buy industry contracts.
 
 	WID_C_SELECT_GIVE_MONEY,          ///< Selection widget for the give money button.
 	WID_C_GIVE_MONEY,                 ///< Button to give money.

@@ -873,7 +873,7 @@ public:
 		} else {
 			DrawString(ir, STR_INDUSTRY_VIEW_NO_CONTRACT);
 		}
-		ir.top += FONT_HEIGHT_NORMAL;
+		ir.top += FONT_HEIGHT_NORMAL + WidgetDimensions::scaled.vsep_wide;
 
 		bool stockpiling = HasBit(ind->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(ind->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
 

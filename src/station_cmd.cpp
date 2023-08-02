@@ -388,7 +388,7 @@ no_nearby_industry:
  */
 static Station *GetClosestDeletedStation(TileIndex tile)
 {
-	uint threshold = 64;
+	uint threshold = 16;
 
 	Station *best_station = nullptr;
 	ForAllStationsRadius(tile, threshold, [&](Station *st) {

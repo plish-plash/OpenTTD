@@ -15,7 +15,7 @@
 #include "zoom_func.h"
 #include "window_func.h"
 #include "industry.h"
-#include "town_map.h"
+#include "town.h"
 
 #include "widgets/viewport_widget.h"
 
@@ -215,7 +215,9 @@ bool ShowTooltipForTile(Window *w, const TileIndex tile, TooltipCloseCondition c
 			/* FALL THROUGH */
 		case MP_HOUSE: {
 			if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES)) return false; // No need for a town name tooltip when it is already displayed
-			SetDParam(0, GetTownIndex(tile));
+			const Town *t = Town::GetByTile(tile);
+			SetDParam(0, t->index);
+			SetDParam(1, t->cache.population);
 			GuiShowTooltips(w, STR_TOWN_NAME_TOOLTIP, TCC_HOVER);
 			return true;
 		}

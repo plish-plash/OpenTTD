@@ -3876,7 +3876,7 @@ STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_CARGO1                    :{BLACK}{INDUSTR
 STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_CARGO2                    :{BLACK}{INDUSTRY}{}{CARGO_LONG} ({COMMA}%){}{BLACK}{CARGO_LONG} ({COMMA}%)
 
 # Town tooltip
-STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN}
+STR_TOWN_NAME_TOOLTIP                                           :{BLACK}{TOWN} ({COMMA})
 
 # Vehicle lists
 ###length VEHICLE_TYPES

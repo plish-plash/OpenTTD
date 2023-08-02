@@ -1201,7 +1201,6 @@ void SlCopy(void *object, size_t length, VarType conv);
 std::vector<SaveLoad> SlTableHeader(const SaveLoadTable &slt);
 std::vector<SaveLoad> SlCompatTableHeader(const SaveLoadTable &slt, const SaveLoadCompatTable &slct);
 void SlObject(void *object, const SaveLoadTable &slt);
-void SlArray(void *array, size_t length, VarType conv);
 
 bool SaveloadCrashWithMissingNewGRFs();
 

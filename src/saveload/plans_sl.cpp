@@ -13,12 +13,49 @@
 
 #include "saveload.h"
 
+static std::vector<TileIndex> _line_tiles;
+
+class SlPlanLines : public DefaultSaveLoadHandler<SlPlanLines, Plan> {
+public:
+	inline static const SaveLoad description[] = {
+		SLE_VAR(PlanLine,    visible,     SLE_BOOL),
+		SLEG_VECTOR("tiles", _line_tiles, SLE_UINT32),
+	};
+	inline const static SaveLoadCompatTable compat_description = {};
+
+	void Save(Plan *p) const override
+	{
+		SlSetStructListLength(p->lines.size());
+
+		for (auto *pl : p->lines) {
+			_line_tiles = pl->tiles;
+			SlObject(pl, this->GetDescription());
+		}
+		_line_tiles.clear();
+	}
+
+	void Load(Plan *p) const override
+	{
+		size_t len = SlGetStructListLength(UINT32_MAX);
+		p->lines.reserve(len);
+
+		for (size_t i = 0; i < len; ++i) {
+			PlanLine *pl = new PlanLine();
+			SlObject(pl, this->GetDescription());
+			pl->tiles = _line_tiles;
+			p->lines.push_back(pl);
+			_line_tiles.clear();
+		}
+	}
+};
+
 /** Description of a plan within the savegame. */
 static const SaveLoad _plan_desc[] = {
 	SLE_VAR(Plan, owner,          SLE_UINT8),
 	SLE_VAR(Plan, visible,        SLE_BOOL),
 	SLE_VAR(Plan, visible_by_all, SLE_BOOL),
 	SLE_VAR(Plan, creation_date,  SLE_INT32),
+	SLEG_STRUCTLIST("lines", SlPlanLines),
 };
 
 struct PLANChunkHandler : ChunkHandler {
@@ -36,6 +73,8 @@ struct PLANChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
+		SlTableHeader(_plan_desc);
+
 		int index;
 		while ((index = SlIterateArray()) != -1) {
 			Plan *p = new (index) Plan();
@@ -44,47 +83,9 @@ struct PLANChunkHandler : ChunkHandler {
 	}
 };
 
-struct PLLNChunkHandler : ChunkHandler {
-	PLLNChunkHandler() : ChunkHandler('PLLN', CH_ARRAY) {}
-
-	void Save() const override
-	{
-		for (Plan *p : Plan::Iterate()) {
-			for (size_t i = 0; i < p->lines.size(); i++) {
-				SlSetArrayIndex((uint) p->index << 16 | (uint) i);
-				PlanLine *pl = p->lines[i];
-				size_t plsz = pl->tiles.size();
-				SlSetLength(plsz * sizeof(TileIndex));
-				SlArray(&pl->tiles[0], plsz, SLE_UINT32);
-			}
-		}
-	}
-
-	void Load() const override
-	{
-		int index;
-		while ((index = SlIterateArray()) != -1) {
-			Plan *p = Plan::Get((uint) index >> 16);
-			uint line_index = index & 0xFFFF;
-			if (p->lines.size() <= line_index) p->lines.resize(line_index + 1);
-			PlanLine *pl = new PlanLine();
-			p->lines[line_index] = pl;
-			size_t plsz = SlGetFieldLength() / sizeof(TileIndex);
-			pl->tiles.resize(plsz);
-			SlArray(&pl->tiles[0], plsz, SLE_UINT32);
-		}
-
-		for (Plan *p : Plan::Iterate()) {
-			p->SetVisibility(false);
-		}
-	}
-};
-
 static const PLANChunkHandler PLAN;
-static const PLLNChunkHandler PLLN;
 static const ChunkHandlerRef plan_chunk_handlers[] = {
 	PLAN,
-	PLLN,
 };
 
 extern const ChunkHandlerTable _plan_chunk_handlers(plan_chunk_handlers);

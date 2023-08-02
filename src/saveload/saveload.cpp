@@ -1045,7 +1045,7 @@ static inline size_t SlCalcArrayLen(size_t length, VarType conv)
  * @param length The length of the array in elements
  * @param conv VarType type of the atomic array (int, byte, uint64_t, etc.)
  */
-void SlArray(void *array, size_t length, VarType conv)
+static void SlArray(void *array, size_t length, VarType conv)
 {
 	switch (_sl.action) {
 		case SLA_SAVE:

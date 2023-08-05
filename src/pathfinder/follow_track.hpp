@@ -17,6 +17,7 @@
 #include "../tunnelbridge.h"
 #include "../tunnelbridge_map.h"
 #include "../depot_map.h"
+#include "../infrastructure_func.h"
 #include "pathfinder_func.h"
 
 /**
@@ -303,8 +304,8 @@ protected:
 				m_err = EC_NO_WAY;
 				return false;
 			}
-			/* don't try to enter other company's depots */
-			if (GetTileOwner(m_new_tile) != m_veh_owner) {
+			/* don't try to enter other company's depots (without sharing) */
+			if (!IsInfraTileUsageAllowed(VEH_ROAD, m_veh_owner, m_new_tile)) {
 				m_err = EC_OWNER;
 				return false;
 			}
@@ -317,8 +318,8 @@ protected:
 			}
 		}
 
-		/* rail transport is possible only on tiles with the same owner as vehicle */
-		if (IsRailTT() && GetTileOwner(m_new_tile) != m_veh_owner) {
+		/* rail transport is possible only on tiles with the same owner as vehicle (without sharing) */
+		if (IsRailTT() && !IsInfraTileUsageAllowed(VEH_TRAIN, m_veh_owner, m_new_tile)) {
 			/* different owner */
 			m_err = EC_NO_WAY;
 			return false;

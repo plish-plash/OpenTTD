@@ -27,6 +27,7 @@
 #include "cheat_type.h"
 #include "order_cmd.h"
 #include "train_cmd.h"
+#include "infrastructure_func.h"
 
 #include "table/strings.h"
 
@@ -754,7 +755,7 @@ CommandCost CmdInsertOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 			if (st == nullptr) return CMD_ERROR;
 
 			if (st->owner != OWNER_NONE) {
-				ret = CheckOwnership(st->owner);
+				ret = CheckInfraUsageAllowed(v->type, st->owner);
 				if (ret.Failed()) return ret;
 			}
 
@@ -800,7 +801,7 @@ CommandCost CmdInsertOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 
 					if (st == nullptr) return CMD_ERROR;
 
-					ret = CheckOwnership(st->owner);
+					ret = CheckInfraUsageAllowed(v->type, st->owner);
 					if (ret.Failed()) return ret;
 
 					if (!CanVehicleUseStation(v, st) || !st->airport.HasHangar()) {
@@ -811,7 +812,7 @@ CommandCost CmdInsertOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 
 					if (dp == nullptr) return CMD_ERROR;
 
-					ret = CheckOwnership(GetTileOwner(dp->xy));
+					ret = CheckInfraUsageAllowed(v->type, GetTileOwner(dp->xy), dp->xy);
 					if (ret.Failed()) return ret;
 
 					switch (v->type) {
@@ -849,7 +850,7 @@ CommandCost CmdInsertOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 				case VEH_TRAIN: {
 					if (!(wp->facilities & FACIL_TRAIN)) return CommandCost(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_RAIL_WAYPOINT);
 
-					ret = CheckOwnership(wp->owner);
+					ret = CheckInfraUsageAllowed(v->type, wp->owner);
 					if (ret.Failed()) return ret;
 					break;
 				}
@@ -857,7 +858,7 @@ CommandCost CmdInsertOrder(DoCommandFlag flags, VehicleID veh, VehicleOrderID se
 				case VEH_SHIP:
 					if (!(wp->facilities & FACIL_DOCK)) return CommandCost(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_NO_BUOY);
 					if (wp->owner != OWNER_NONE) {
-						ret = CheckOwnership(wp->owner);
+						ret = CheckInfraUsageAllowed(v->type, wp->owner);
 						if (ret.Failed()) return ret;
 					}
 					break;

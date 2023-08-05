@@ -38,6 +38,7 @@
 #include "train_cmd.h"
 #include "misc_cmd.h"
 #include "timer/timer_game_calendar.h"
+#include "infrastructure_func.h"
 
 #include "table/strings.h"
 #include "table/train_sprites.h"
@@ -3008,7 +3009,7 @@ static void TrainEnterStation(Train *v, StationID station)
 /* Check if the vehicle is compatible with the specified tile */
 static inline bool CheckCompatibleRail(const Train *v, TileIndex tile)
 {
-	return IsTileOwner(tile, v->owner) &&
+	return IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile) &&
 			(!v->IsFrontEngine() || HasBit(v->compatible_railtypes, GetRailType(tile)));
 }
 
@@ -3161,7 +3162,7 @@ static Vehicle *FindTrainCollideEnum(Vehicle *v, void *data)
 	if (v->type != VEH_TRAIN || Train::From(v)->track == TRACK_BIT_DEPOT) return nullptr;
 
 	/* do not crash into trains of another company. */
-	if (v->owner != tcc->v->owner) return nullptr;
+	// if (v->owner != tcc->v->owner) return nullptr;
 
 	/* get first vehicle now to make most usual checks faster */
 	Train *coll = Train::From(v)->First();

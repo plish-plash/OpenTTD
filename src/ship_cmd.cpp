@@ -35,6 +35,7 @@
 #include "industry.h"
 #include "industry_map.h"
 #include "ship_cmd.h"
+#include "infrastructure_func.h"
 
 #include "table/strings.h"
 
@@ -155,7 +156,7 @@ static const Depot *FindClosestShipDepot(const Vehicle *v, uint max_distance)
 
 	for (const Depot *depot : Depot::Iterate()) {
 		TileIndex tile = depot->xy;
-		if (IsShipDepotTile(tile) && IsTileOwner(tile, v->owner)) {
+		if (IsShipDepotTile(tile) && IsInfraTileUsageAllowed(VEH_SHIP, v->owner, tile)) {
 			uint dist = DistanceManhattan(tile, v->tile);
 			if (dist < best_dist) {
 				best_dist = dist;

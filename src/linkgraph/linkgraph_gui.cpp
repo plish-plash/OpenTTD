@@ -100,7 +100,8 @@ void LinkGraphOverlay::RebuildCache()
 				assert(sta != stb);
 
 				/* Show links between stations of selected companies or "neutral" ones like oilrigs. */
-				if (stb->owner != OWNER_NONE && sta->owner != OWNER_NONE && !HasBit(this->company_mask, stb->owner)) continue;
+				if (stb->owner != OWNER_NONE && sta->owner != OWNER_NONE &&
+						!(HasBit(this->company_mask, stb->owner) || HasBit(this->company_mask, sta->owner))) continue;
 				if (stb->rect.IsEmpty()) continue;
 
 				if (!this->IsLinkVisible(pta, this->GetStationMiddle(stb), &dpi)) continue;

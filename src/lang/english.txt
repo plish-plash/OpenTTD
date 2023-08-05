@@ -1768,6 +1768,11 @@ STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY                            :Max memory usag
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :How much memory a single script may consume before it's forcibly terminated. This may need to be increased for large maps.
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} MiB
 
+STR_CONFIG_SETTING_SHARING_RAIL                                 :Enable sharing of railways: {STRING2}
+STR_CONFIG_SETTING_SHARING_ROAD                                 :Enable sharing of road stops and depots: {STRING2}
+STR_CONFIG_SETTING_SHARING_WATER                                :Enable sharing of docks and ship depots: {STRING2}
+STR_CONFIG_SETTING_SHARING_AIR                                  :Enable sharing of airports: {STRING2}
+
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :Service intervals are in percents: {STRING2}
 STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :When enabled, vehicles try to service when their reliability drops by a given percentage of the maximum reliability.{}{}For example, if a vehicle's maximum reliability is 90% and the service interval is 20%, the vehicle will try to service when it reaches 72% reliability.
 

@@ -34,6 +34,7 @@
 #include "error.h"
 #include "order_cmd.h"
 #include "company_cmd.h"
+#include "infrastructure_func.h"
 
 #include "widgets/order_widget.h"
 
@@ -383,7 +384,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 	order.index = 0;
 
 	/* check depot first */
-	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsTileOwner(tile, _local_company)) {
+	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
 		order.MakeGoToDepot(v->type == VEH_AIRCRAFT ? GetStationIndex(tile) : GetDepotIndex(tile),
 				ODTFB_PART_OF_ORDERS,
 				(_settings_client.gui.new_nonstop && v->IsGroundVehicle()) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
@@ -396,7 +397,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 	/* check rail waypoint */
 	if (IsRailWaypointTile(tile) &&
 			v->type == VEH_TRAIN &&
-			IsTileOwner(tile, _local_company)) {
+			IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile)) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
 		if (_settings_client.gui.new_nonstop != _ctrl_pressed) order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		return order;
@@ -418,7 +419,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 			const Industry *in = Industry::GetByTile(tile);
 			st = in->neutral_station;
 		}
-		if (st != nullptr && (st->owner == _local_company || st->owner == OWNER_NONE)) {
+		if (st != nullptr && IsInfraUsageAllowed(v->type, v->owner, st->owner)) {
 			byte facil;
 			switch (v->type) {
 				case VEH_SHIP:     facil = FACIL_DOCK;    break;

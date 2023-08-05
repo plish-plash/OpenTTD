@@ -32,6 +32,7 @@
 #include "train_cmd.h"
 #include "vehicle_cmd.h"
 #include "core/geometry_func.hpp"
+#include "infrastructure_func.h"
 
 #include "widgets/depot_widget.h"
 
@@ -746,7 +747,7 @@ struct DepotWindow : Window {
 
 		/* Setup disabled buttons. */
 		TileIndex tile = this->window_number;
-		this->SetWidgetsDisabledState(!IsTileOwner(tile, _local_company),
+		this->SetWidgetsDisabledState(!Company::IsValidID(_local_company) || !IsInfraTileUsageAllowed(this->type, _local_company, tile),
 			WID_D_STOP_ALL,
 			WID_D_START_ALL,
 			WID_D_SELL,

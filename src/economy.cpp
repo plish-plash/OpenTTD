@@ -1203,7 +1203,7 @@ CargoPayment::~CargoPayment()
 
 	Backup<CompanyID> cur_company(_current_company, this->front->owner, FILE_LINE);
 
-	SubtractMoneyFromCompany(CommandCost(this->front->GetExpenseType(true), -this->route_profit));
+	SubtractMoneyFromCompany(CommandCost(this->front->GetExpenseType(true), -(this->visual_profit + this->visual_transfer)));
 	this->front->profit_this_year += (this->visual_profit + this->visual_transfer) << 8;
 
 	if (this->route_profit != 0 && IsLocalCompany() && !PlayVehicleSound(this->front, VSE_LOAD_UNLOAD)) {
